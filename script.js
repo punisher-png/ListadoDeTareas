@@ -3,16 +3,6 @@ const dateNumber = document.getElementById('dateNumber');
 const dateText = document.getElementById('dateText');
 const dateMonth = document.getElementById('dateMonth');
 const dateYear = document.getElementById('dateYear');
-const lista = document.querySelector('#lista')
-const elemento = document.querySelector('#elemento')
-const input = document.querySelector('#input')
-const botonEnter = document.querySelector('#boton-enter')
-const check = 'fa-check-circle'
-const uncheck = 'fa-circle'
-const lineThrough = 'line-through'
-let LIST
-
-let id
 
 // Tasks Container
 const tasksContainer = document.getElementById('tasksContainer');
@@ -21,51 +11,40 @@ const setDate = () => {
     const date = new Date();
     dateNumber.textContent = date.toLocaleString('es', { day: 'numeric' });
     dateText.textContent = date.toLocaleString('es', { weekday: 'long' });
-    dateMonth.textContent = date.toLocaleString('es', { month: 'long' });
+    dateMonth.textContent = date.toLocaleString('es', { month: 'short' });
     dateYear.textContent = date.toLocaleString('es', { year: 'numeric' });
 };
 
-// funcion de agregar tarea 
+const addNewTask = event => {
+    event.preventDefault();
+    const { value } = event.target.taskText;
+    if(!value) return;
+    const task = document.createElement('div');
+    task.classList.add('task', 'roundBorder');
+    task.addEventListener('click', changeTaskState)
+    task.textContent = value;
+    tasksContainer.prepend(task);
+    event.target.reset();
+};
 
-function agregarTarea( tarea,id,realizado,eliminado) {
-    if(eliminado) {return} // si existe eliminado es true si no es false 
+const changeTaskState = event => {
+    event.target.classList.toggle('done');
+};
 
-    const REALIZADO = realizado ? check : uncheck // si realizado es verdadero check si no uncheck
-
-    const LINE = realizado ? lineThrough : '' 
-
-    const elemento = `
-                        <li id="elemento">
-                        <i class="far ${REALIZADO}" data="realizado" id="${id}"></i>
-                        <p class="text ${LINE}">${tarea}</p>
-                        <i class="fas fa-trash de" data="eliminado" id="${id}"></i> 
-                        </li>
-                    `
-    lista.insertAdjacentHTML("beforeend",elemento)
-
+const order = () => {
+    const done = [];
+    const toDo = [];
+    tasksContainer.childNodes.forEach( el => {
+        el.classList.contains('done') ? done.push(el) : toDo.push(el)
+    })
+    return [...toDo, ...done];
 }
 
-
-// funcion de Tarea Realizada 
-
-function tareaRealizada(element) {
-    element.classList.toggle(check)
-    element.classList.toggle(uncheck)
-    element.parentNode.querySelector('.text').classList.toggle(lineThrough)
-    LIST[element.id].realizado = LIST[element.id].realizado ?false :true //Si
-   // console.log(LIST)
-   // console.log(LIST[element.id])
-   // console.log(LIST[element.id].realizado)
+const renderOrderedTasks = () => {
+    order().forEach(el => tasksContainer.appendChild(el))
 }
 
-function tareaEliminada(element){
-   // console.log(element.parentNode)
-   // console.log(element.parentNode.parentNode)
-    element.parentNode.parentNode.removeChild(element.parentNode)
-    LIST[element.id].eliminado = true
-    console.log(LIST)
-}
-
+setDate();
 
 
 
